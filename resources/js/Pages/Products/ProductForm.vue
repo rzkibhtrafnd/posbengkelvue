@@ -6,6 +6,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import CurrencyInput from '@/Components/CurrencyInput.vue';
 
 const props = defineProps({
     product: {
@@ -126,30 +127,26 @@ function submit() {
 
                 <div v-if="!isService">
                     <InputLabel for="cost_price" value="Harga Modal" />
-                    <TextInput
+                    <CurrencyInput
                         id="cost_price"
                         v-model="form.cost_price"
-                        type="number"
                         min="0"
-                        step="0.01"
                         class="mt-1 block w-full"
                         required
-                        placeholder="Contoh: 50000"
+                        placeholder="Contoh: 50.000"
                     />
                     <InputError class="mt-2" :message="form.errors.cost_price" />
                 </div>
 
                 <div>
                     <InputLabel for="selling_price" value="Harga Jual" />
-                    <TextInput
+                    <CurrencyInput
                         id="selling_price"
                         v-model="form.selling_price"
-                        type="number"
                         min="0"
-                        step="0.01"
                         class="mt-1 block w-full"
                         required
-                        placeholder="Contoh: 75000"
+                        placeholder="Contoh: 75.000"
                     />
                     <InputError class="mt-2" :message="form.errors.selling_price" />
                 </div>

@@ -68,7 +68,14 @@ class VehicleController extends Controller
     {
         $this->authorizeRead($request);
         $vehicle->load('customer');
-        return Inertia::render('Vehicles/Show', compact('vehicle'));
+
+        $serviceHistory = $vehicle->transactions()
+            ->with('items')
+            ->latest('transaction_date')
+            ->paginate(PaginationOptions::perPage($request))
+            ->withQueryString();
+
+        return Inertia::render('Vehicles/Show', compact('vehicle', 'serviceHistory'));
     }
 
     public function edit(Vehicle $vehicle): Response

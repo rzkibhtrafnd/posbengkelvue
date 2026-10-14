@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Admin\MechanicController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\TransactionController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -37,6 +38,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('products', ProductController::class);
         Route::resource('mechanics', MechanicController::class);
         Route::resource('vehicles', VehicleController::class);
+        Route::get('transactions/{transaction}/invoice', [TransactionController::class, 'invoice'])->name('transactions.invoice');
+        Route::resource('transactions', TransactionController::class);
     });
 
     Route::prefix('kasir')->name('kasir.')->middleware('role:kasir')->group(function () {
@@ -45,6 +48,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
         Route::get('/vehicles', [VehicleController::class, 'index'])->name('vehicles.index');
         Route::get('/vehicles/{vehicle}', [VehicleController::class, 'show'])->name('vehicles.show');
+        Route::get('transactions/{transaction}/invoice', [TransactionController::class, 'invoice'])->name('transactions.invoice');
+        Route::resource('transactions', TransactionController::class)->except(['edit', 'update', 'destroy']);
     });
 });
 

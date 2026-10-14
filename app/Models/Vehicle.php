@@ -25,10 +25,10 @@ class Vehicle extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    // public function transactions(): HasMany
-    // {
-    //     return $this->hasMany(Transaction::class);
-    // }
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
 
     public function scopeFilter($query, array $filters)
     {
