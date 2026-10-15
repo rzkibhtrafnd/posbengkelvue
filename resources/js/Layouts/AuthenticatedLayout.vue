@@ -12,6 +12,7 @@ const sidebarMinimized = ref(false);
 // Akses data global dari Inertia ($page.props)
 const page = usePage();
 const user = computed(() => page.props.auth?.user || {});
+const workshop = computed(() => page.props.workshop || {});
 const flash = computed(() => page.props.flash || {});
 
 // Helper Role Check (Sesuai dengan logika Blade sebelumnya)
@@ -27,6 +28,7 @@ const hasTransactionRoutes = computed(() => {
 });
 const hasAdminMechanicsRoute = computed(() => route().has('admin.mechanics.index'));
 const hasAdminCategoriesRoute = computed(() => route().has('admin.categories.index'));
+const hasAdminSettingsRoute = computed(() => route().has('admin.settings.edit'));
 const hasProductRoute = computed(() => route().has(isAdmin.value ? 'admin.products.index' : 'kasir.products.index'));
 const hasVehicleRoute = computed(() => route().has(isAdmin.value ? 'admin.vehicles.index' : 'kasir.vehicles.index'));
 
@@ -63,7 +65,9 @@ const isRouteActive = (pattern) => {
                     <ApplicationLogo class="w-auto h-8 text-blue-500 fill-current shrink-0" />
                     <div v-show="!sidebarMinimized" class="flex flex-col leading-tight overflow-hidden">
                         <span class="text-sm font-black tracking-wider text-white whitespace-nowrap">POS BENGKEL</span>
-                        <span class="text-[10px] font-bold text-blue-400 font-mono tracking-widest uppercase whitespace-nowrap">MANAGEMENT</span>
+                        <span class="max-w-44 truncate text-[10px] font-bold text-blue-400 font-mono tracking-widest uppercase" :title="workshop.name || 'Nama bengkel belum diatur'">
+                            {{ workshop.name || 'Nama bengkel belum diatur' }}
+                        </span>
                     </div>
                 </a>
                 <button 
@@ -219,6 +223,28 @@ const isRouteActive = (pattern) => {
                             ]"
                         ></i>
                         <span v-show="!sidebarMinimized" class="whitespace-nowrap">Kelola Kategori</span>
+                    </Link>
+
+                    <Link
+                        v-if="hasAdminSettingsRoute"
+                        :href="route('admin.settings.edit')"
+                        title="Pengaturan Bengkel"
+                        class="flex items-center py-3 text-sm font-medium rounded-xl transition-colors duration-200 group"
+                        :class="[
+                            isRouteActive('admin.settings.*')
+                                ? 'bg-blue-600 text-white'
+                                : 'text-slate-300 hover:bg-slate-800 hover:text-white',
+                            sidebarMinimized ? 'justify-center px-0' : 'px-4'
+                        ]"
+                    >
+                        <i
+                            class="fa-solid fa-gear transition-colors"
+                            :class="[
+                                isRouteActive('admin.settings.*') ? 'text-white' : 'text-slate-400 group-hover:text-white',
+                                sidebarMinimized ? 'text-xl' : 'w-5 mr-3 text-lg'
+                            ]"
+                        ></i>
+                        <span v-show="!sidebarMinimized" class="whitespace-nowrap">Pengaturan Bengkel</span>
                     </Link>
                 </template>
 

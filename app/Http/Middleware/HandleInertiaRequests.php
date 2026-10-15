@@ -3,6 +3,8 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
+use App\Models\Setting;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -42,6 +44,21 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
+            'workshop' => fn () => $this->workshopDetails(),
         ]);
+    }
+
+    /** @return array{name: ?string, logo_url: ?string} */
+    private function workshopDetails(): array
+    {
+        $setting = Setting::query()->select(['name', 'logo_path'])->first();
+        $logoPath = $setting?->logo_path;
+
+        return [
+            'name' => $setting?->name,
+            'logo_url' => $logoPath && Storage::disk('public')->exists($logoPath)
+                ? '/storage/'.ltrim($logoPath, '/')
+                : null,
+        ];
     }
 }

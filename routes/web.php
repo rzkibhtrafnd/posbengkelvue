@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Admin\MechanicController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\TransactionController;
 
@@ -37,6 +38,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('categories', CategoryController::class);
         Route::resource('products', ProductController::class);
         Route::resource('mechanics', MechanicController::class);
+        Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
+        Route::post('settings', [SettingController::class, 'update'])->name('settings.update');
         Route::resource('vehicles', VehicleController::class);
         Route::get('transactions/{transaction}/invoice', [TransactionController::class, 'invoice'])->name('transactions.invoice');
         Route::resource('transactions', TransactionController::class);
