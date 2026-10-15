@@ -92,12 +92,12 @@ onBeforeUnmount(() => {
                     <TextInput id="phone" v-model="form.phone" type="tel" class="mt-1 block w-full" required maxlength="50" placeholder="08xxxxxxxxxx" />
                     <InputError class="mt-2" :message="form.errors.phone" />
                 </div>
-                <div class="md:col-span-2">
+                <div>
                     <InputLabel for="email" value="Email" />
                     <TextInput id="email" v-model="form.email" type="email" class="mt-1 block w-full" maxlength="255" placeholder="email@contoh.com (opsional)" />
                     <InputError class="mt-2" :message="form.errors.email" />
                 </div>
-                <div class="md:col-span-2">
+                <div>
                     <InputLabel for="address" value="Alamat" />
                     <textarea id="address" v-model="form.address" rows="3" required maxlength="5000" class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Alamat lengkap bengkel"></textarea>
                     <InputError class="mt-2" :message="form.errors.address" />
@@ -139,7 +139,7 @@ onBeforeUnmount(() => {
                         >
                             <div class="mb-3 flex items-center justify-between">
                                 <h5 class="text-xs font-bold uppercase tracking-wide text-slate-600">Rekening {{ index + 1 }}</h5>
-                                <SecondaryButton type="button" @click="removeBank(index)" class="text-xs font-semibold text-red-600 hover:text-red-800">
+                                <SecondaryButton type="button" class="text-xs font-semibold text-red-600 hover:text-red-800" @click="removeBank(index)">
                                     Hapus
                                 </SecondaryButton>
                             </div>

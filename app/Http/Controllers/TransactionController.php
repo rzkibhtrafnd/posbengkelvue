@@ -7,6 +7,7 @@ use App\Http\Requests\TransactionRequest;
 use App\Models\Category;
 use App\Models\Mechanic;
 use App\Models\Product;
+use App\Models\Setting;
 use App\Models\Transaction;
 use App\Models\Vehicle;
 use App\Services\TransactionService;
@@ -141,8 +142,15 @@ class TransactionController extends Controller
         $this->authorizeTransactionRead($request, $transaction);
 
         $transaction = $this->transactionService->getTransactionDetails($transaction);
+        $setting = Setting::query()->first(['name', 'email', 'phone', 'address']);
+        $workshop = [
+            'name' => $setting?->name,
+            'email' => $setting?->email,
+            'phone' => $setting?->phone,
+            'address' => $setting?->address,
+        ];
 
-        return Inertia::render('Transactions/Invoice', compact('transaction'));
+        return Inertia::render('Transactions/Invoice', compact('transaction', 'workshop'));
     }
 
     private function authorizeRead(Request $request): void

@@ -7,6 +7,10 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    workshop: {
+        type: Object,
+        default: () => ({}),
+    },
 });
 
 const paymentMethod = computed(() => {
@@ -51,16 +55,17 @@ onMounted(() => window.print());
 
         <main class="receipt-paper">
             <header class="receipt-header">
-                <p class="store-name">POS BENGKEL</p>
-                <p class="store-caption">Struk penjualan &amp; servis</p>
+                <p class="store-name">{{ workshop.name || 'POS BENGKEL' }}</p>
+                <p v-if="workshop.email">{{ workshop.email }}</p>
+                <p v-if="workshop.phone">{{ workshop.phone }}</p>
+                <p v-if="workshop.address" class="store-address">{{ workshop.address }}</p>
                 <div class="divider"></div>
                 <p class="receipt-title">BUKTI TRANSAKSI</p>
                 <p class="invoice-number">{{ transaction.invoice_number }}</p>
                 <p>{{ formatDate(transaction.transaction_date) }} WIB</p>
-                <p class="receipt-status">{{ status.toUpperCase() }}</p>
             </header>
 
-            <section class="receipt-meta">
+            <section class="receipt-meta mt-3">
                 <div class="meta-row"><span>Pelanggan</span><strong>{{ transaction.customer_name || 'Pelanggan Umum' }}</strong></div>
                 <div v-if="transaction.customer_phone" class="meta-row"><span>Telepon</span><strong>{{ transaction.customer_phone }}</strong></div>
                 <div class="meta-row"><span>Kendaraan</span><strong>{{ transaction.vehicle_plate_number || 'Tanpa kendaraan' }}</strong></div>
@@ -170,6 +175,10 @@ onMounted(() => window.print());
 
 .store-caption {
     color: #475569;
+}
+
+.store-address {
+    white-space: pre-line;
 }
 
 .receipt-title {

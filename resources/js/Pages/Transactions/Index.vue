@@ -180,6 +180,15 @@ function deleteTransaction(transaction) {
                             <td class="px-3 py-3 text-center align-middle">
                                 <div class="flex items-center justify-center gap-2">
                                     <Link
+                                        :href="route(`${routePrefix}.transactions.invoice`, transaction.id)"
+                                        target="_blank"
+                                        class="inline-flex items-center rounded border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                        title="Invoice"
+                                    >
+                                        <i class="fa-solid fa-receipt mr-1"></i>
+                                        Invoice
+                                    </Link>
+                                    <Link
                                         :href="route(`${routePrefix}.transactions.show`, transaction.id)"
                                         class="inline-flex items-center rounded border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         title="Detail"
