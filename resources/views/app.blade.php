@@ -4,22 +4,26 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        @php
-            $workshopLogo = \App\Models\Setting::query()->value('logo_path');
-            $workshopLogoUrl = $workshopLogo && \Illuminate\Support\Facades\Storage::disk('public')->exists($workshopLogo)
-                ? url('/storage/'.ltrim($workshopLogo, '/'))
-                : null;
-            $workshopLogoType = $workshopLogo ? match (strtolower(pathinfo($workshopLogo, PATHINFO_EXTENSION))) {
-                'png' => 'image/png',
-                'jpg', 'jpeg' => 'image/jpeg',
-                'webp' => 'image/webp',
-                default => 'image/x-icon',
-            } : null;
-        @endphp
-        @if ($workshopLogoUrl)
-            <link rel="icon" type="{{ $workshopLogoType }}" href="{{ $workshopLogoUrl }}">
-        @else
+        @if (($page['component'] ?? null) === 'Errors/Http')
             <link rel="icon" href="{{ asset('favicon.ico') }}">
+        @else
+            @php
+                $workshopLogo = \App\Models\Setting::query()->value('logo_path');
+                $workshopLogoUrl = $workshopLogo && \Illuminate\Support\Facades\Storage::disk('public')->exists($workshopLogo)
+                    ? url('/storage/'.ltrim($workshopLogo, '/'))
+                    : null;
+                $workshopLogoType = $workshopLogo ? match (strtolower(pathinfo($workshopLogo, PATHINFO_EXTENSION))) {
+                    'png' => 'image/png',
+                    'jpg', 'jpeg' => 'image/jpeg',
+                    'webp' => 'image/webp',
+                    default => 'image/x-icon',
+                } : null;
+            @endphp
+            @if ($workshopLogoUrl)
+                <link rel="icon" type="{{ $workshopLogoType }}" href="{{ $workshopLogoUrl }}">
+            @else
+                <link rel="icon" href="{{ asset('favicon.ico') }}">
+            @endif
         @endif
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>

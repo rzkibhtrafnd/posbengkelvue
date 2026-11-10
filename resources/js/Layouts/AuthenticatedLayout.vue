@@ -31,10 +31,10 @@ const hasProfileRoute = computed(() => route().has('profile.edit'));
 const hasProductRoute = computed(() => route().has(isAdmin.value ? 'admin.products.index' : 'kasir.products.index'));
 const hasVehicleRoute = computed(() => route().has(isAdmin.value ? 'admin.vehicles.index' : 'kasir.vehicles.index'));
 
-// Helper Route Check untuk Active State Menu
 const isRouteActive = (pattern) => {
     return route().current(pattern);
 };
+
 </script>
 
 <template>
@@ -105,7 +105,27 @@ const isRouteActive = (pattern) => {
                     <span v-show="!sidebarMinimized" class="whitespace-nowrap">Dashboard</span>
                 </Link>
 
-                <!-- Menu Transaksi / POS (Admin & Kasir) -->
+                <details
+                    v-if="hasTransactionRoutes"
+                    :open="isRouteActive('*.transactions.*')"
+                    class="group"
+                >
+                    <summary
+                        title="Transaksi"
+                        class="flex cursor-pointer list-none items-center rounded-xl py-3 text-sm font-bold transition-colors duration-200 hover:bg-slate-800 hover:text-white [&::-webkit-details-marker]:hidden"
+                        :class="[
+                            isRouteActive('*.transactions.*') ? 'bg-slate-800 text-white' : 'text-slate-300',
+                            sidebarMinimized ? 'justify-center px-0' : 'px-4'
+                        ]"
+                    >
+                        <i
+                            class="fa-solid fa-cash-register"
+                            :class="sidebarMinimized ? 'text-xl' : 'mr-3 w-5 text-lg text-slate-400'"
+                        ></i>
+                        <span v-show="!sidebarMinimized" class="flex-1">Transaksi</span>
+                        <i v-if="!sidebarMinimized" class="fa-solid fa-chevron-down text-[10px] text-slate-500 transition-transform group-open:rotate-180"></i>
+                    </summary>
+                    <div class="ml-3 mt-1 space-y-1 border-l border-slate-700 pl-2">
                 <Link
                     v-if="hasTransactionRoutes"
                     :href="isAdmin ? route('admin.transactions.create') : route('kasir.transactions.create')"
@@ -150,12 +170,28 @@ const isRouteActive = (pattern) => {
                     ></i>
                     <span v-show="!sidebarMinimized" class="whitespace-nowrap">Riwayat Transaksi</span>
                 </Link>
+                    </div>
+                </details>
 
-                <!-- Master Data Header -->
-                <div class="pt-3 pb-1">
-                    <p v-show="!sidebarMinimized" class="px-4 text-[10px] font-bold uppercase tracking-wider text-slate-500">Master Data</p>
-                    <div v-show="sidebarMinimized" class="border-t border-slate-800 my-2"></div>
-                </div>
+                <details
+                    :open="isRouteActive('admin.users.*') || isRouteActive('admin.mechanics.*') || isRouteActive('admin.categories.*') || isRouteActive('*.products.*') || isRouteActive('*.vehicles.*')"
+                    class="group"
+                >
+                    <summary
+                        title="Master Data"
+                        class="flex cursor-pointer list-none items-center rounded-xl py-3 text-sm font-bold text-slate-300 transition-colors duration-200 hover:bg-slate-800 hover:text-white [&::-webkit-details-marker]:hidden"
+                        :class="[
+                            isRouteActive('admin.users.*') || isRouteActive('admin.mechanics.*') || isRouteActive('admin.categories.*') || isRouteActive('*.products.*') || isRouteActive('*.vehicles.*')
+                                ? 'bg-slate-800 text-white'
+                                : '',
+                            sidebarMinimized ? 'justify-center px-0' : 'px-4'
+                        ]"
+                    >
+                        <i class="fa-solid fa-database" :class="sidebarMinimized ? 'text-xl' : 'mr-3 w-5 text-lg text-slate-400'"></i>
+                        <span v-show="!sidebarMinimized" class="flex-1">Master Data</span>
+                        <i v-if="!sidebarMinimized" class="fa-solid fa-chevron-down text-[10px] text-slate-500 transition-transform group-open:rotate-180"></i>
+                    </summary>
+                    <div class="ml-3 mt-1 space-y-1 border-l border-slate-700 pl-2">
 
                 <!-- Menu Khusus Admin -->
                 <template v-if="isAdmin">
@@ -265,11 +301,50 @@ const isRouteActive = (pattern) => {
                     ></i>
                     <span v-show="!sidebarMinimized" class="whitespace-nowrap">Data Kendaraan</span>
                 </Link>
-                <!-- Pengaturan akun dan toko -->
-                <div class="pt-3 pb-1">
-                    <p v-show="!sidebarMinimized" class="px-4 text-[10px] font-bold uppercase tracking-wider text-slate-500">Pengaturan</p>
-                    <div v-show="sidebarMinimized" class="border-t border-slate-800 my-2"></div>
-                </div>
+                    </div>
+                </details>
+
+                <details
+                    v-if="isAdmin"
+                    :open="isRouteActive('admin.activity-logs.*') || isRouteActive('admin.settings.*')"
+                    class="group"
+                >
+                    <summary
+                        title="Pengaturan"
+                        class="flex cursor-pointer list-none items-center rounded-xl py-3 text-sm font-bold text-slate-300 transition-colors duration-200 hover:bg-slate-800 hover:text-white [&::-webkit-details-marker]:hidden"
+                        :class="[
+                            isRouteActive('admin.activity-logs.*') || isRouteActive('admin.settings.*')
+                                ? 'bg-slate-800 text-white'
+                                : '',
+                            sidebarMinimized ? 'justify-center px-0' : 'px-4'
+                        ]"
+                    >
+                        <i class="fa-solid fa-sliders" :class="sidebarMinimized ? 'text-xl' : 'mr-3 w-5 text-lg text-slate-400'"></i>
+                        <span v-show="!sidebarMinimized" class="flex-1">Pengaturan</span>
+                        <i v-if="!sidebarMinimized" class="fa-solid fa-chevron-down text-[10px] text-slate-500 transition-transform group-open:rotate-180"></i>
+                    </summary>
+                    <div class="ml-3 mt-1 space-y-1 border-l border-slate-700 pl-2">
+                <Link
+                    v-if="route().has('admin.activity-logs.index')"
+                    :href="route('admin.activity-logs.index')"
+                    title="Log Aktivitas"
+                    class="flex items-center py-3 text-sm font-bold rounded-xl transition-colors duration-200 group"
+                    :class="[
+                        isRouteActive('admin.activity-logs.*')
+                            ? 'border border-transparent bg-blue-600 text-white shadow-sm'
+                            : 'text-slate-300 hover:bg-slate-800 hover:text-white',
+                        sidebarMinimized ? 'justify-center px-0' : 'px-4'
+                    ]"
+                >
+                    <i
+                        class="fa-solid fa-clock-rotate-left transition-colors"
+                        :class="[
+                            isRouteActive('admin.activity-logs.*') ? 'text-white' : 'text-slate-400 group-hover:text-white',
+                            sidebarMinimized ? 'text-xl' : 'w-5 mr-3 text-lg'
+                        ]"
+                    ></i>
+                    <span v-show="!sidebarMinimized" class="whitespace-nowrap">Log Aktivitas</span>
+                </Link>
 
                 <Link
                     v-if="hasAdminSettingsRoute"
@@ -290,22 +365,26 @@ const isRouteActive = (pattern) => {
                     <span v-show="!sidebarMinimized" class="whitespace-nowrap">Pengaturan Toko</span>
                 </Link>
 
+                    </div>
+                </details>
+
                 <Link
                     v-if="hasProfileRoute"
                     :href="route('profile.edit')"
                     title="Profile"
-                    class="flex items-center py-3 text-sm font-bold rounded-xl transition-colors duration-200 group"
+                    class="flex items-center py-3 text-sm font-bold text-slate-300 rounded-xl transition-colors duration-200 group hover:bg-slate-800 hover:text-white"
                     :class="[
-                        isRouteActive('profile.*')
-                            ? 'border border-transparent bg-blue-600 text-white shadow-sm'
-                            : 'text-slate-300 hover:bg-slate-800 hover:text-white',
+                        isRouteActive('profile.*') ? 'bg-blue-600 text-white shadow-sm' : '',
                         sidebarMinimized ? 'justify-center px-0' : 'px-4'
                     ]"
                 >
-                    <i class="fa-solid fa-user-gear transition-colors" :class="[
-                        isRouteActive('profile.*') ? 'text-white' : 'text-slate-400 group-hover:text-white',
-                        sidebarMinimized ? 'text-xl' : 'w-5 mr-3 text-lg'
-                    ]"></i>
+                    <i
+                        class="fa-solid fa-user-gear transition-colors"
+                        :class="[
+                            isRouteActive('profile.*') ? 'text-white' : 'text-slate-400 group-hover:text-white',
+                            sidebarMinimized ? 'text-xl' : 'w-5 mr-3 text-lg'
+                        ]"
+                    ></i>
                     <span v-show="!sidebarMinimized" class="whitespace-nowrap">Profile</span>
                 </Link>
 

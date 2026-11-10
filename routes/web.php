@@ -1,18 +1,19 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Enums\UserRole;
+use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\MechanicController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\VehicleController;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\Admin\MechanicController;
-use App\Http\Controllers\Admin\SettingController;
-use App\Http\Controllers\VehicleController;
-use App\Http\Controllers\TransactionController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -34,6 +35,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
         Route::get('/dashboard', fn () => Inertia::render('Admin/Dashboard'))->name('dashboard');
+        Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
         Route::resource('users', UserController::class);
         Route::resource('categories', CategoryController::class);
         Route::resource('products', ProductController::class);
@@ -63,3 +65,5 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::fallback(fn () => abort(404));
