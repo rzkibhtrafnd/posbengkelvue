@@ -10,6 +10,7 @@ defineProps({
     categories: { type: Array, required: true },
     vehicles: { type: Array, required: true },
     mechanics: { type: Array, required: true },
+    banks: { type: Array, default: () => [] },
     transaction: { type: Object, default: null },
     initialCart: { type: Array, default: () => [] },
 });
@@ -42,6 +43,7 @@ const indexRoute = computed(() => (
             :categories="categories"
             :vehicles="vehicles"
             :mechanics="mechanics"
+            :banks="banks"
             :transaction="transaction"
             :initial-cart="initialCart"
         />

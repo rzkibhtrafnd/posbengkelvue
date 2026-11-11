@@ -49,8 +49,9 @@ class TransactionController extends Controller
         $categories = Category::orderBy('name')->get();
         $vehicles = Vehicle::with('customer')->orderBy('plate_number')->get();
         $mechanics = Mechanic::orderBy('name')->get();
+        $banks = Setting::query()->first(['banks'])?->banks ?? [];
 
-        return Inertia::render('Transactions/Create', compact('products', 'categories', 'vehicles', 'mechanics'));
+        return Inertia::render('Transactions/Create', compact('products', 'categories', 'vehicles', 'mechanics', 'banks'));
     }
 
     public function store(TransactionRequest $request): RedirectResponse
@@ -88,6 +89,7 @@ class TransactionController extends Controller
         $categories = Category::orderBy('name')->get();
         $vehicles = Vehicle::with('customer')->orderBy('plate_number')->get();
         $mechanics = Mechanic::orderBy('name')->get();
+        $banks = Setting::query()->first(['banks'])?->banks ?? [];
 
         $transaction->load('items.product');
         $initialCart = $transaction->items->map(function ($item) {
@@ -106,6 +108,7 @@ class TransactionController extends Controller
             'categories',
             'vehicles',
             'mechanics',
+            'banks',
             'transaction',
             'initialCart'
         ));
@@ -142,12 +145,13 @@ class TransactionController extends Controller
         $this->authorizeTransactionRead($request, $transaction);
 
         $transaction = $this->transactionService->getTransactionDetails($transaction);
-        $setting = Setting::query()->first(['name', 'email', 'phone', 'address']);
+        $setting = Setting::query()->first(['name', 'email', 'phone', 'address', 'banks']);
         $workshop = [
             'name' => $setting?->name,
             'email' => $setting?->email,
             'phone' => $setting?->phone,
             'address' => $setting?->address,
+            'banks' => $setting?->banks ?? [],
         ];
 
         return Inertia::render('Transactions/Invoice', compact('transaction', 'workshop'));

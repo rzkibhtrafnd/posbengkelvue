@@ -84,7 +84,7 @@ const isRouteActive = (pattern) => {
                 :class="sidebarMinimized ? 'px-2' : 'px-4'"
             >
                 <!-- Dashboard Link -->
-                <Link
+                <a
                     :href="dashboardUrl"
                     title="Dashboard"
                     class="flex items-center py-3 text-sm font-bold rounded-xl transition-colors duration-200 group"
@@ -103,7 +103,7 @@ const isRouteActive = (pattern) => {
                         ]"
                     ></i>
                     <span v-show="!sidebarMinimized" class="whitespace-nowrap">Dashboard</span>
-                </Link>
+                </a>
 
                 <details
                     v-if="hasTransactionRoutes"

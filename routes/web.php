@@ -6,22 +6,18 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\MechanicController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\VehicleController;
-use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+Route::get('/', function (Request $request) {
+    return $request->user()
+        ? redirect()->route('dashboard')
+        : redirect()->route('login');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -34,7 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
-        Route::get('/dashboard', fn () => Inertia::render('Admin/Dashboard'))->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
         Route::resource('users', UserController::class);
         Route::resource('categories', CategoryController::class);
@@ -48,7 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::prefix('kasir')->name('kasir.')->middleware('role:kasir')->group(function () {
-        Route::get('/dashboard', fn () => Inertia::render('Kasir/Dashboard'))->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'cashier'])->name('dashboard');
         Route::get('/products', [ProductController::class, 'index'])->name('products.index');
         Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
         Route::get('/vehicles', [VehicleController::class, 'index'])->name('vehicles.index');

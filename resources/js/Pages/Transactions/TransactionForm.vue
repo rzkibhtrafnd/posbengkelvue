@@ -11,6 +11,7 @@ const props = defineProps({
     categories: { type: Array, required: true },
     vehicles: { type: Array, required: true },
     mechanics: { type: Array, required: true },
+    banks: { type: Array, default: () => [] },
     transaction: { type: Object, default: null },
     initialCart: { type: Array, default: () => [] },
 });
@@ -383,6 +384,30 @@ function submit() {
                         Atur pembayaran tunai
                     </SecondaryButton>
                     <p v-if="cashShortfall" class="mt-1 text-center text-xs font-medium text-amber-700">Pembayaran tunai belum cukup.</p>
+                </div>
+
+                <div
+                    v-if="form.payment_method === 'transfer'"
+                    class="space-y-3 rounded-xl border border-blue-100 bg-blue-50 p-3"
+                >
+                    <div class="flex items-center gap-2 text-xs font-bold text-blue-900">
+                        <i class="fa-solid fa-building-columns"></i>
+                        Informasi rekening transfer
+                    </div>
+                    <div v-if="banks.length" class="space-y-2">
+                        <div
+                            v-for="(bank, index) in banks"
+                            :key="`${bank.bank_name}-${bank.bank_account_number}-${index}`"
+                            class="rounded-lg border border-blue-100 bg-white p-3 text-xs"
+                        >
+                            <p class="font-bold text-slate-800">{{ bank.bank_name }}</p>
+                            <p class="mt-1 font-mono text-sm font-bold tracking-wide text-blue-700">{{ bank.bank_account_number }}</p>
+                            <p class="mt-1 text-slate-500">a.n. {{ bank.bank_account_holder }}</p>
+                        </div>
+                    </div>
+                    <p v-else class="text-xs leading-5 text-blue-800">
+                        Informasi rekening belum diatur. Silakan konfirmasi rekening pembayaran kepada pihak bengkel.
+                    </p>
                 </div>
 
                 <PrimaryButton

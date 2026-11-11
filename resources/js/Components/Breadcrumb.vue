@@ -27,13 +27,13 @@ const dashboardHref = computed(() => {
     >
         <ol class="inline-flex items-center space-x-1 text-xs font-medium md:space-x-2">
             <li class="inline-flex items-center">
-                <Link
+                <a
                     :href="dashboardHref"
                     class="inline-flex items-center text-slate-500 transition-colors hover:text-blue-600"
                 >
                     <i class="fa-solid fa-house mr-2 text-[11px] text-slate-400"></i>
                     <span>Dashboard</span>
-                </Link>
+                </a>
             </li>
 
             <li v-for="(item, index) in items" :key="`${item.label}-${index}`">

@@ -21,6 +21,10 @@ const status = computed(() => {
     const value = props.transaction.status?.value ?? props.transaction.status;
     return value === 'completed' ? 'Lunas' : (value || '—');
 });
+const isBankTransfer = computed(() => (
+    (props.transaction.payment_method?.value ?? props.transaction.payment_method) === 'transfer'
+));
+const banks = computed(() => props.workshop.banks ?? []);
 const printedAt = computed(() => new Intl.DateTimeFormat('id-ID', {
     dateStyle: 'medium',
     timeStyle: 'short',
@@ -96,6 +100,18 @@ onMounted(() => window.print());
                     <div class="total-row"><span>Uang diterima</span><strong>{{ formatCurrency(transaction.pay_amount) }}</strong></div>
                     <div class="total-row"><span>Kembalian</span><strong>{{ formatCurrency(transaction.change_amount) }}</strong></div>
                 </template>
+            </section>
+
+            <section v-if="isBankTransfer" class="receipt-bank-details">
+                <p class="section-label">Informasi Transfer Bank</p>
+                <article v-for="(bank, index) in banks" :key="`${bank.bank_name}-${bank.bank_account_number}-${index}`" class="bank-account">
+                    <p class="bank-name">{{ bank.bank_name }}</p>
+                    <p class="bank-number">{{ bank.bank_account_number }}</p>
+                    <p>a.n. {{ bank.bank_account_holder }}</p>
+                </article>
+                <p v-if="!banks.length" class="bank-empty">
+                    Silakan konfirmasi rekening pembayaran kepada pihak bengkel.
+                </p>
             </section>
 
             <section v-if="transaction.notes" class="receipt-notes">
@@ -269,6 +285,38 @@ onMounted(() => window.print());
     padding-top: 7px;
     border-top: 1px dashed #94a3b8;
     white-space: pre-line;
+}
+
+.receipt-bank-details {
+    margin-top: 10px;
+    padding: 8px 0;
+    border-top: 1px dashed #94a3b8;
+}
+
+.bank-account {
+    margin-top: 6px;
+    padding: 6px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    break-inside: avoid;
+}
+
+.bank-account p {
+    margin: 1px 0;
+}
+
+.bank-name,
+.bank-number {
+    font-weight: 700;
+}
+
+.bank-number {
+    font-family: "Courier New", monospace;
+    letter-spacing: 0.4px;
+}
+
+.bank-empty {
+    margin-top: 5px;
 }
 
 .receipt-notes p {
