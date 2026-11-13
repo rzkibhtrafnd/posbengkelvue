@@ -26,6 +26,7 @@ const dateRangeLabel = computed(() => {
 
     return `${formatter.format(new Date(`${props.filters.date_from}T00:00:00`))} – ${formatter.format(new Date(`${props.filters.date_to}T00:00:00`))}`;
 });
+const periodLabel = computed(() => dateRangeLabel.value || `Tahun ${new Date().getFullYear()}`);
 const todayLabel = new Intl.DateTimeFormat('id-ID', {
     weekday: 'long',
     day: 'numeric',
@@ -121,9 +122,10 @@ function clearDateFilter() {
         </template>
 
         <div class="space-y-6">
-            <section class="relative overflow-hidden rounded-3xl bg-blue-700 p-6 text-white shadow-lg sm:p-8">
-                <div class="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
+            <section class="relative overflow-hidden rounded-2xl bg-blue-700 px-5 py-6 text-white shadow-lg sm:px-6">
+                <div class="relative flex flex-wrap items-center justify-between gap-4">
+                    <div class="min-w-0">
+                        <p class="text-xs font-bold uppercase tracking-[0.12em] text-blue-100/90">Ringkasan aktivitas Anda</p>
                         <p class="text-sm font-semibold text-blue-200">{{ todayLabel }}</p>
                         <h1 class="mt-2 text-2xl font-black tracking-tight sm:text-3xl">
                             Selamat datang, {{ user.name || 'Admin' }}!
@@ -132,13 +134,60 @@ function clearDateFilter() {
                             Pantau performa bengkel, transaksi, dan persediaan dari satu tempat.
                         </p>
                     </div>
-                    <Link
-                        :href="route('admin.transactions.create')"
-                        class="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-white px-5 py-3 text-sm font-bold text-blue-800 shadow-sm transition hover:bg-blue-50 sm:self-auto"
+                    <form
+                        class="flex w-full flex-wrap items-center justify-start gap-3 rounded-xl border border-white/20 bg-white/10 p-3 sm:w-auto sm:justify-end"
+                        @submit.prevent="applyDateFilter"
                     >
-                        <i class="fa-solid fa-plus"></i>
-                        Buat transaksi
-                    </Link>
+                        <div class="flex items-center gap-2">
+                            <label for="dashboard-date-from" class="whitespace-nowrap text-xs font-bold uppercase tracking-wider text-blue-50">
+                                Dari
+                            </label>
+                            <input
+                                id="dashboard-date-from"
+                                v-model="filterForm.date_from"
+                                type="date"
+                                class="h-9 rounded-lg border-white/20 bg-white px-3 text-xs font-semibold text-slate-700 shadow-sm focus:border-blue-300 focus:ring-blue-300"
+                            />
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label for="dashboard-date-to" class="whitespace-nowrap text-xs font-bold uppercase tracking-wider text-blue-50">
+                                Sampai
+                            </label>
+                            <input
+                                id="dashboard-date-to"
+                                v-model="filterForm.date_to"
+                                type="date"
+                                class="h-9 rounded-lg border-white/20 bg-white px-3 text-xs font-semibold text-slate-700 shadow-sm focus:border-blue-300 focus:ring-blue-300"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            class="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-lg bg-white px-3 text-xs font-bold text-blue-800 shadow-sm transition hover:bg-blue-50 disabled:opacity-60"
+                            :disabled="filterForm.processing"
+                        >
+                            <i class="fa-solid fa-magnifying-glass mr-2 text-[10px]" aria-hidden="true"></i>
+                            Cari
+                        </button>
+                        <button
+                            v-if="hasDateFilter || filterForm.date_from || filterForm.date_to"
+                            type="button"
+                            class="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-lg border border-white/25 bg-white/10 px-3 text-xs font-semibold text-white transition hover:bg-white/20"
+                            @click="clearDateFilter"
+                        >
+                            <i class="fa-solid fa-rotate-left mr-2 text-blue-100" aria-hidden="true"></i>
+                            Reset
+                        </button>
+                        <span class="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-white/20 bg-blue-950/20 px-3 py-1.5 text-xs font-bold tracking-wide text-white">
+                            <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+                            {{ periodLabel }}
+                        </span>
+                        <p
+                            v-if="filterForm.errors.date_from || filterForm.errors.date_to"
+                            class="w-full text-xs font-semibold text-rose-100"
+                        >
+                            {{ filterForm.errors.date_from || filterForm.errors.date_to }}
+                        </p>
+                    </form>
                 </div>
             </section>
 
@@ -161,83 +210,31 @@ function clearDateFilter() {
                 </article>
             </section>
 
-            <form
-                class="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-end"
-                @submit.prevent="applyDateFilter"
-            >
-                <div class="flex-1">
-                    <label for="dashboard-date-from" class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
-                        Dari tanggal
-                    </label>
-                    <input
-                        id="dashboard-date-from"
-                        v-model="filterForm.date_from"
-                        type="date"
-                        class="w-full rounded-xl border-slate-200 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    />
-                    <p v-if="filterForm.errors.date_from" class="mt-1 text-xs text-red-600">{{ filterForm.errors.date_from }}</p>
-                </div>
-                <div class="flex-1">
-                    <label for="dashboard-date-to" class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
-                        Sampai tanggal
-                    </label>
-                    <input
-                        id="dashboard-date-to"
-                        v-model="filterForm.date_to"
-                        type="date"
-                        class="w-full rounded-xl border-slate-200 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    />
-                    <p v-if="filterForm.errors.date_to" class="mt-1 text-xs text-red-600">{{ filterForm.errors.date_to }}</p>
-                </div>
-                <div class="flex gap-2">
-                    <button
-                        type="submit"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-800 disabled:opacity-60"
-                        :disabled="filterForm.processing"
-                    >
-                        <i class="fa-solid fa-filter"></i>
-                        Filter
-                    </button>
-                    <button
-                        v-if="hasDateFilter || filterForm.date_from || filterForm.date_to"
-                        type="button"
-                        class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-50"
-                        @click="clearDateFilter"
-                    >
-                        Reset
-                    </button>
-                </div>
-            </form>
-
             <section class="grid gap-6 xl:grid-cols-2">
                 <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-                    <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
+                    <div class="mb-5">
                         <div>
-                            <h2 class="font-bold text-slate-900">Tren transaksi & omzet bulanan</h2>
+                            <p class="text-xs font-bold uppercase tracking-wider text-blue-700">Tren bulanan</p>
+                            <h2 class="mt-1 text-lg font-extrabold text-slate-900">Tren transaksi & omzet bulanan</h2>
                             <p class="mt-1 text-sm text-slate-500">
                                 {{ hasDateFilter ? dateRangeLabel : `Seluruh bulan tahun ${new Date().getFullYear()}` }}
                             </p>
                         </div>
-                        <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
-                            {{ hasDateFilter ? 'Periode filter' : 'Januari–Desember' }}
-                        </span>
                     </div>
                     <RevenueBarChart :data="dashboard.monthlyTrend" type="line" />
                 </article>
 
                 <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-                    <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
+                    <div class="mb-5">
                         <div>
-                            <h2 class="font-bold text-slate-900">Tren transaksi & omzet harian</h2>
+                            <p class="text-xs font-bold uppercase tracking-wider text-blue-700">Tren harian</p>
+                            <h2 class="mt-1 text-lg font-extrabold text-slate-900">Tren transaksi & omzet harian</h2>
                             <p class="mt-1 text-sm text-slate-500">
-                                {{ hasDateFilter ? dateRangeLabel : 'Minggu berjalan, dimulai Senin' }}
+                                {{ hasDateFilter ? `${dateRangeLabel} · akumulasi per hari` : 'Akumulasi per hari selama tahun berjalan' }}
                             </p>
                         </div>
-                        <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
-                            {{ hasDateFilter ? `${dashboard.dailyTrend.length} hari` : 'Senin–Minggu' }}
-                        </span>
                     </div>
-                    <RevenueBarChart :data="dashboard.dailyTrend" />
+                    <RevenueBarChart :data="dashboard.dailyTrend" show-transactions />
                 </article>
             </section>
 

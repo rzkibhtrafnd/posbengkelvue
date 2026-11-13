@@ -24,12 +24,8 @@ class DashboardService
             ? $this->getTransactionSummary($rangeStart, $rangeEnd)
             : $this->getTransactionSummary(today()->startOfDay(), today()->endOfDay());
         $monthSummary = $this->getTransactionSummary(now()->startOfMonth(), now()->endOfMonth());
-        $dailyStart = $hasDateRange
-            ? $rangeStart
-            : Carbon::now()->startOfWeek(Carbon::MONDAY);
-        $dailyEnd = $hasDateRange
-            ? $rangeEnd
-            : $dailyStart->copy()->endOfWeek(Carbon::SUNDAY);
+        $dailyStart = $hasDateRange ? $rangeStart : Carbon::now()->startOfYear();
+        $dailyEnd = $hasDateRange ? $rangeEnd : Carbon::now()->endOfYear();
 
         return [
             'stats' => [
@@ -47,7 +43,7 @@ class DashboardService
                 'customers' => Customer::query()->count(),
                 'users' => User::query()->count(),
             ],
-            'dailyTrend' => $this->getDailyTrend(Transaction::query(), $dailyStart, $dailyEnd),
+            'dailyTrend' => $this->getWeekdayTrend(Transaction::query(), $dailyStart, $dailyEnd),
             'monthlyTrend' => $this->getMonthlyTrend($rangeStart, $rangeEnd),
             'recentTransactions' => Transaction::query()
                 ->latest('transaction_date')
@@ -164,6 +160,30 @@ class DashboardService
         }
 
         return $dailyTrend;
+    }
+
+    private function getWeekdayTrend(Builder $transactions, Carbon $start, Carbon $end): array
+    {
+        $salesByWeekday = $transactions
+            ->whereBetween('transaction_date', [$start, $end])
+            ->selectRaw('WEEKDAY(transaction_date) as sale_weekday, COUNT(*) as transaction_count, COALESCE(SUM(grand_total), 0) as revenue')
+            ->groupByRaw('WEEKDAY(transaction_date)')
+            ->get()
+            ->keyBy('sale_weekday');
+        $dayLabels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+        $weekdayTrend = [];
+
+        foreach ($dayLabels as $weekday => $label) {
+            $sale = $salesByWeekday->get($weekday);
+            $weekdayTrend[] = [
+                'date' => 'weekday-'.$weekday,
+                'label' => $label,
+                'revenue' => (float) ($sale?->revenue ?? 0),
+                'transactions' => (int) ($sale?->transaction_count ?? 0),
+            ];
+        }
+
+        return $weekdayTrend;
     }
 
     private function getMonthlyTrend(?Carbon $dateFrom = null, ?Carbon $dateTo = null): array
