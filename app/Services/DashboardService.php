@@ -47,7 +47,7 @@ class DashboardService
             'monthlyTrend' => $this->getMonthlyTrend($rangeStart, $rangeEnd),
             'recentTransactions' => Transaction::query()
                 ->latest('transaction_date')
-                ->limit(6)
+                ->limit(8)
                 ->get([
                     'id',
                     'invoice_number',

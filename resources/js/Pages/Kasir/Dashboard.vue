@@ -97,13 +97,13 @@ function paymentLabel(method) {
                 </article>
             </section>
 
-            <section class="grid gap-6 xl:grid-cols-[1fr_1.2fr]">
+            <section class="grid items-start gap-6 xl:grid-cols-[1fr_1.2fr]">
                 <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
                     <div class="mb-6">
-                        <h2 class="font-bold text-slate-900">Omzet Anda</h2>
+                        <h2 class="font-bold text-slate-900">Omzet & transaksi Anda</h2>
                         <p class="mt-1 text-sm text-slate-500">Performa 7 hari terakhir</p>
                     </div>
-                    <RevenueBarChart :data="dashboard.salesTrend" />
+                    <RevenueBarChart :data="dashboard.salesTrend" show-transactions />
                 </article>
 
                 <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">

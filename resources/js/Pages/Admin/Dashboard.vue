@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import RevenueBarChart from '@/Components/RevenueBarChart.vue';
+import TopProductsBarChart from '@/Components/TopProductsBarChart.vue';
 
 const props = defineProps({
     dashboard: { type: Object, required: true },
@@ -27,12 +28,6 @@ const dateRangeLabel = computed(() => {
     return `${formatter.format(new Date(`${props.filters.date_from}T00:00:00`))} – ${formatter.format(new Date(`${props.filters.date_to}T00:00:00`))}`;
 });
 const periodLabel = computed(() => dateRangeLabel.value || `Tahun ${new Date().getFullYear()}`);
-const todayLabel = new Intl.DateTimeFormat('id-ID', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-}).format(new Date());
 
 function formatCurrency(value) {
     return new Intl.NumberFormat('id-ID').format(Number(value) || 0);
@@ -126,7 +121,6 @@ function clearDateFilter() {
                 <div class="relative flex flex-wrap items-center justify-between gap-4">
                     <div class="min-w-0">
                         <p class="text-xs font-bold uppercase tracking-[0.12em] text-blue-100/90">Ringkasan aktivitas Anda</p>
-                        <p class="text-sm font-semibold text-blue-200">{{ todayLabel }}</p>
                         <h1 class="mt-2 text-2xl font-black tracking-tight sm:text-3xl">
                             Selamat datang, {{ user.name || 'Admin' }}!
                         </h1>
@@ -309,17 +303,9 @@ function clearDateFilter() {
 
                     <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                         <h2 class="font-bold text-slate-900">Produk terlaris bulan ini</h2>
-                        <div v-if="dashboard.topProducts.length" class="mt-4 space-y-4">
-                            <div v-for="(product, index) in dashboard.topProducts" :key="product.product_name" class="flex items-center gap-3">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-black text-blue-700">
-                                    {{ index + 1 }}
-                                </span>
-                                <div class="min-w-0 flex-1">
-                                    <p class="truncate text-sm font-semibold text-slate-800">{{ product.product_name }}</p>
-                                    <p class="mt-0.5 text-xs text-slate-400">{{ product.quantity }} terjual</p>
-                                </div>
-                                <p class="whitespace-nowrap text-xs font-bold text-slate-600">Rp {{ formatCurrency(product.revenue) }}</p>
-                            </div>
+                        <p class="mt-1 text-xs text-slate-500">Diurutkan berdasarkan jumlah unit terjual</p>
+                        <div v-if="dashboard.topProducts.length" class="mt-5">
+                            <TopProductsBarChart :products="dashboard.topProducts" />
                         </div>
                         <p v-else class="mt-4 text-sm text-slate-400">Belum ada penjualan bulan ini.</p>
                     </article>
